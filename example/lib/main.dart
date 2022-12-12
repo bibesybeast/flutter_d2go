@@ -8,8 +8,26 @@ import 'package:flutter/services.dart';
 import 'package:flutter_d2go/flutter_d2go.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:auto_size_text/auto_size_text.dart';
 
 List<CameraDescription> cameras = [];
+String finalDesc = '';
+String isEdible = '';
+Color edibilityColor = Colors.green;
+class WildPlants{
+  String plantName;
+  String plantDesc;
+  String edibility;
+  WildPlants(this.plantName, this.plantDesc, this.edibility);
+
+}
+
+List<WildPlants> wildPlants = [WildPlants('Asparagus', 'Wild asparagus can be found among the tall grasses and older growth from previous years. The stalks are thin and green with green or purple, coniferous-like crowns and similarly colored scales or leaves, growing along the stems. The stalks are firm and provide a crisp texture.', 'edible'),
+                                WildPlants('Chickweed', 'Common chickweed grows erect to prostrate and sometimes is matlike. Stems are mostly forked and have a line of hairs down either side. Leaves are broadly egg shaped, have a pointy tip, and are mostly hairless or have hairy margins at the base. The leaves are spaced evenly and are opposite to one another along the stem.', 'edible'),
+                                  WildPlants('Common Sow Thistle', 'An erect, hairless, branched annual or biennial herb about 1 m tall with a taproot and hollow stems which have a milky sap. The basal leaves are up to 30 cm long, form a rosette and are soft and lobed or toothed.', 'edible'),
+                                    WildPlants('Peppergrass', 'The broad basal leaves differ from the narrow leaves on the flowering stalks and range from entire to deeply lobed. Small greenish or whitish four-petaled flowers are arranged in short spikes, and the seeds are usually borne in flat, round, dry fruits called silicles.', 'edible'),
+                                      WildPlants('Wild Leak', 'A popular edible that grows in quality hardwood forests across the Midwest to the Northeast, and south to Virginia. The broad flat leaves with burgundy stems emerge in early spring from a bulb. Both the leaves and bulbs are edible and have a mild onion flavor.', 'edible'),
+                                        WildPlants('broccoli', 'A fast-growing annual plant that grows 60–90 cm (24–35 inches) tall. Upright and branching with leathery leaves, broccoli bears dense green clusters of flower buds at the ends of the central axis and the branches.', 'edible')];
 
 Future<void> main() async {
   try {
@@ -132,9 +150,12 @@ class _MyAppState extends State<MyApp> {
     );
   }
 
+
+
+
   Future loadModel() async {
-    String modelPath = 'assets/models/d2go.ptl';
-    String labelPath = 'assets/models/classes.txt';
+    String modelPath = 'assets/models/josh_faster_new.ptl';
+    String labelPath = 'assets/models/classes_new.txt';
     try {
       await FlutterD2go.loadModel(
         modelPath: modelPath,
@@ -146,13 +167,18 @@ class _MyAppState extends State<MyApp> {
     }
   }
 
+  Future setText(RecognitionModel recognizedModel)async{
+
+    return 'hello';
+  }
+
   Future detect() async {
     final image = _selectedImage ??
         await getImageFileFromAssets('assets/images/${_imageList[_index]}');
     final decodedImage = await decodeImageFromList(image.readAsBytesSync());
     final predictions = await FlutterD2go.getImagePrediction(
       image: image,
-      minScore: 0.8,
+      minScore: 0.06,
     );
     List<RecognitionModel>? recognitions;
     if (predictions.isNotEmpty) {
@@ -184,6 +210,9 @@ class _MyAppState extends State<MyApp> {
         _recognitions = recognitions;
       },
     );
+
+
+
   }
 
   Future<File> getImageFileFromAssets(String path) async {
@@ -198,12 +227,12 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    double screenWidth = MediaQuery.of(context).size.width;
+    double screenWidth = MediaQuery.of(context).size.width/2;
     List<Widget> stackChildren = [];
     stackChildren.add(
       Positioned(
-        top: 0.0,
-        left: 0.0,
+        top: 10.0,
+        left: 90.0,
         width: screenWidth,
         child: _selectedImage == null
             ? Image.asset(
@@ -242,19 +271,21 @@ class _MyAppState extends State<MyApp> {
       }
 
       if (_recognitions!.first.keypoints != null) {
-        for (RecognitionModel recognition in _recognitions!) {
+          RecognitionModel? recognition = _recognitions?.first;
           List<Widget> keypointChildren = [];
-          for (Keypoint keypoint in recognition.keypoints!) {
-            keypointChildren.add(
-              RenderKeypoints(
-                keypoint: keypoint,
-                imageWidthScale: widthScale,
-                imageHeightScale: heightScale,
-              ),
-            );
-          }
-          stackChildren.addAll(keypointChildren);
-        }
+            if(recognition != null) {
+              for (Keypoint keypoint in recognition.keypoints!) {
+                keypointChildren.add(
+                  RenderKeypoints(
+                    keypoint: keypoint,
+                    imageWidthScale: widthScale,
+                    imageHeightScale: heightScale,
+                  ),
+                );
+
+                stackChildren.addAll(keypointChildren);
+              }
+            }
       }
 
       stackChildren.addAll(_recognitions!.map(
@@ -267,75 +298,144 @@ class _MyAppState extends State<MyApp> {
         },
       ).toList());
     }
+    int indexChecker = 0;
+
+        if(wildPlants.indexWhere((plant) => plant.plantName == '${_recognitions?.first.detectedClass!.toString()}') != -1){
+          finalDesc = wildPlants[wildPlants.indexWhere((plant) => plant.plantName == '${_recognitions?.first.detectedClass!.toString()}')].plantDesc;
+          isEdible = wildPlants[wildPlants.indexWhere((plant) => plant.plantName == '${_recognitions?.first.detectedClass!.toString()}')].edibility;
+          edibilityColor = Colors.green;
+        }else{
+          finalDesc = 'No Class Description Detected Found!';
+          isEdible = 'Undetermined';
+          edibilityColor = Colors.red;
+        }
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Flutter D2Go'),
-        backgroundColor: Colors.deepPurpleAccent,
+        title: const Text('EXO'),
+        backgroundColor: Colors.green,
       ),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const SizedBox(height: 48),
+          const SizedBox(height: 0),
+
           Expanded(
             child: Stack(
               children: stackChildren,
             ),
           ),
-          const SizedBox(height: 48),
-          MyButton(
-            onPressed: !_isLiveModeOn ? detect : null,
-            text: 'Detect',
+
+          const SizedBox(height: 0),
+           SizedBox(
+            width: 250.0,
+            height: 25,
+            child: AutoSizeText(
+              '${_recognitions?.first.detectedClass!.toString()}',
+              style: TextStyle(fontSize: 12.0, fontWeight: FontWeight.bold, color: Colors.green),
+              minFontSize: 15,
+
+              textAlign: TextAlign.center,
+
+            ),
           ),
+          SizedBox(
+            width: 100,
+            height: 20,
+            child: AutoSizeText(
+              isEdible,
+              style: TextStyle(fontSize: 12.0, fontWeight: FontWeight.bold, color: Colors.black, backgroundColor: edibilityColor),
+              minFontSize: 12,
+              textAlign: TextAlign.center,
+
+            ),
+          ),
+          const SizedBox(height: 10),
+          SizedBox(
+            width: 250.0,
+            height: 70.0,
+            child: AutoSizeText(
+              finalDesc,
+              style: TextStyle(fontSize: 12.0, color: Colors.green),
+              minFontSize: 5,
+              textAlign: TextAlign.justify,
+
+            ),
+          ),
+
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 48),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
+
               children: [
-                MyButton(
-                    onPressed: () => setState(
-                          () {
-                            _recognitions = null;
-                            if (_selectedImage == null) {
-                              _index != 2 ? _index += 1 : _index = 0;
-                            } else {
-                              _selectedImage = null;
-                            }
-                          },
-                        ),
-                    text: 'Test Image\n${_index + 1}/${_imageList.length}'),
-                MyButton(
+                SizedBox(
+                  height: 75.0 ,
+                  width: 75.0 ,
+                  child: FloatingActionButton(
                     onPressed: () async {
                       final XFile? pickedFile =
-                          await _picker.pickImage(source: ImageSource.gallery);
+                      await _picker.pickImage(source: ImageSource.gallery);
                       if (pickedFile == null) return;
                       setState(
-                        () {
+                            () {
                           _recognitions = null;
                           _selectedImage = File(pickedFile.path);
                         },
                       );
                     },
-                    text: 'Select'),
-                MyButton(
+                    child: const Icon(
+
+                        Icons.photo
+
+                    ),backgroundColor: Colors.green,
+
+                  ),
+                ),
+                SizedBox(
+                  height: 100.0 ,
+                  width: 100.0 ,
+                  child: FloatingActionButton(
+                    onPressed: !_isLiveModeOn ? detect : null,
+                    child: const Icon(
+
+                        Icons.eco
+
+                    ),backgroundColor: Colors.green,
+
+                  ),
+                ),
+                SizedBox(
+                  height: 75.0 ,
+                  width: 75.0 ,
+                  child: FloatingActionButton(
                     onPressed: () async {
-                      _isLiveModeOn
-                          ? await controller!.stopImageStream()
-                          : await live();
+                      final XFile? pickedFile =
+                      await _picker.pickImage(source: ImageSource.camera);
+                      if (pickedFile == null) return;
                       setState(
-                        () {
-                          _isLiveModeOn = !_isLiveModeOn;
+                            () {
                           _recognitions = null;
-                          _selectedImage = null;
+                          _selectedImage = File(pickedFile.path);
                         },
                       );
                     },
-                    text: 'Live'),
+                    child: const Icon(
+                        Icons.add_a_photo
+
+                    ),backgroundColor: Colors.green,
+
+                  ),
+                ),
+
+
+
               ],
             ),
           ),
         ],
       ),
+
     );
   }
 }
@@ -385,10 +485,10 @@ class RenderBoxes extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final left = recognition.rect.left * imageWidthScale;
-    final top = recognition.rect.top * imageHeightScale;
-    final right = recognition.rect.right * imageWidthScale;
-    final bottom = recognition.rect.bottom * imageHeightScale;
+    final left = recognition.rect.left* imageWidthScale + 90;
+    final top = recognition.rect.top * imageHeightScale + 10;
+    final right = recognition.rect.right * imageWidthScale + 90;
+    final bottom = recognition.rect.bottom * imageHeightScale + 10;
     return Positioned(
       left: left,
       top: top,
@@ -398,15 +498,15 @@ class RenderBoxes extends StatelessWidget {
         decoration: BoxDecoration(
           borderRadius: const BorderRadius.all(Radius.circular(8.0)),
           border: Border.all(
-            color: Colors.yellow,
+            color: Colors.red,
             width: 2,
           ),
         ),
         child: Text(
           "${recognition.detectedClass} ${(recognition.confidenceInClass * 100).toStringAsFixed(0)}%",
           style: TextStyle(
-            background: Paint()..color = Colors.yellow,
-            color: Colors.black,
+            background: Paint()..color = Colors.greenAccent,
+            color: Colors.brown,
             fontSize: 15.0,
           ),
         ),
@@ -429,10 +529,10 @@ class RenderSegments extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final left = recognition.rect.left * imageWidthScale;
-    final top = recognition.rect.top * imageHeightScale;
-    final right = recognition.rect.right * imageWidthScale;
-    final bottom = recognition.rect.bottom * imageHeightScale;
+    final left = recognition.rect.left * imageWidthScale + 90;
+    final top = recognition.rect.top * imageHeightScale + 10;
+    final right = recognition.rect.right * imageWidthScale + 90;
+    final bottom = recognition.rect.bottom  * imageHeightScale + 10;
     final mask = recognition.mask!;
     return Positioned(
       left: left,
@@ -461,8 +561,8 @@ class RenderKeypoints extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final x = keypoint.x * imageWidthScale;
-    final y = keypoint.y * imageHeightScale;
+    final x = keypoint.x * imageWidthScale + 90;
+    final y = keypoint.y * imageHeightScale + 10;
     return Positioned(
       left: x,
       top: y,
