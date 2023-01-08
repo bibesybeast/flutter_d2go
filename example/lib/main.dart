@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
-
+import 'package:intl/intl.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -14,6 +14,8 @@ List<CameraDescription> cameras = [];
 String finalDesc = '';
 String isEdible = '';
 Color edibilityColor = Colors.green;
+double computedConfidenceLevel = 0.0;
+var f = NumberFormat("###.0#", "en_US");
 class WildPlants{
   String plantName;
   String plantDesc;
@@ -154,7 +156,7 @@ class _MyAppState extends State<MyApp> {
 
 
   Future loadModel() async {
-    String modelPath = 'assets/models/josh_faster_new.ptl';
+    String modelPath = 'assets/models/josh_mask.ptl';
     String labelPath = 'assets/models/classes_new.txt';
     try {
       await FlutterD2go.loadModel(
@@ -167,10 +169,6 @@ class _MyAppState extends State<MyApp> {
     }
   }
 
-  Future setText(RecognitionModel recognizedModel)async{
-
-    return 'hello';
-  }
 
   Future detect() async {
     final image = _selectedImage ??
@@ -178,7 +176,7 @@ class _MyAppState extends State<MyApp> {
     final decodedImage = await decodeImageFromList(image.readAsBytesSync());
     final predictions = await FlutterD2go.getImagePrediction(
       image: image,
-      minScore: 0.06,
+      minScore: 0,
     );
     List<RecognitionModel>? recognitions;
     if (predictions.isNotEmpty) {
@@ -259,7 +257,7 @@ class _MyAppState extends State<MyApp> {
       final heightScale = aspectRatio / _imageHeight!;
 
       if (_recognitions!.first.mask != null) {
-        stackChildren.addAll(_recognitions!.map(
+        stackChildren.add(_recognitions!.map(
           (recognition) {
             return RenderSegments(
               imageWidthScale: widthScale,
@@ -267,7 +265,7 @@ class _MyAppState extends State<MyApp> {
               recognition: recognition,
             );
           },
-        ).toList());
+        ).toList().first);
       }
 
       if (_recognitions!.first.keypoints != null) {
@@ -288,7 +286,7 @@ class _MyAppState extends State<MyApp> {
             }
       }
 
-      stackChildren.addAll(_recognitions!.map(
+      stackChildren.add(_recognitions!.map(
         (recognition) {
           return RenderBoxes(
             imageWidthScale: widthScale,
@@ -296,14 +294,19 @@ class _MyAppState extends State<MyApp> {
             recognition: recognition,
           );
         },
-      ).toList());
+      ).toList().first);
     }
     int indexChecker = 0;
+    double? confidenceLevel = 0.0;
+
 
         if(wildPlants.indexWhere((plant) => plant.plantName == '${_recognitions?.first.detectedClass!.toString()}') != -1){
           finalDesc = wildPlants[wildPlants.indexWhere((plant) => plant.plantName == '${_recognitions?.first.detectedClass!.toString()}')].plantDesc;
           isEdible = wildPlants[wildPlants.indexWhere((plant) => plant.plantName == '${_recognitions?.first.detectedClass!.toString()}')].edibility;
           edibilityColor = Colors.green;
+          confidenceLevel = _recognitions?.first.confidenceInClass;
+          computedConfidenceLevel = (confidenceLevel! * 100.0);
+
         }else{
           finalDesc = 'No Class Description Detected Found!';
           isEdible = 'Undetermined';
@@ -314,6 +317,7 @@ class _MyAppState extends State<MyApp> {
       appBar: AppBar(
         title: const Text('EXO'),
         backgroundColor: Colors.green,
+        elevation: 0,
       ),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -325,7 +329,18 @@ class _MyAppState extends State<MyApp> {
               children: stackChildren,
             ),
           ),
+          SizedBox(
+            width: 250.0,
+            height: 10,
+            child: AutoSizeText(
+              '${f.format(computedConfidenceLevel) + '%'}',
+              style: TextStyle(fontSize: 12.0, fontWeight: FontWeight.bold, color: Colors.green),
+              minFontSize: 10,
 
+              textAlign: TextAlign.center,
+
+            ),
+          ),
           const SizedBox(height: 0),
            SizedBox(
             width: 250.0,
@@ -339,6 +354,7 @@ class _MyAppState extends State<MyApp> {
 
             ),
           ),
+
           SizedBox(
             width: 100,
             height: 20,
