@@ -2,4 +2,5 @@ Asparagus
 Chickweed
 Common Sow Thistle
 Peppergrass
+Red Clover
 Wild Leek

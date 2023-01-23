@@ -12,24 +12,30 @@ import 'package:auto_size_text/auto_size_text.dart';
 
 List<CameraDescription> cameras = [];
 String finalDesc = '';
+String plantName = '';
 String isEdible = '';
+String plantUsage = '';
+String others = '';
 Color edibilityColor = Colors.green;
 double computedConfidenceLevel = 0.0;
 var f = NumberFormat("###.0#", "en_US");
 class WildPlants{
   String plantName;
   String plantDesc;
+  String usage;
   String edibility;
-  WildPlants(this.plantName, this.plantDesc, this.edibility);
+  String others;
+  WildPlants(this.plantName, this.plantDesc, this.usage, this.edibility, this.others);
 
 }
 
-List<WildPlants> wildPlants = [WildPlants('Asparagus', 'Wild asparagus can be found among the tall grasses and older growth from previous years. The stalks are thin and green with green or purple, coniferous-like crowns and similarly colored scales or leaves, growing along the stems. The stalks are firm and provide a crisp texture.', 'edible'),
-                                WildPlants('Chickweed', 'Common chickweed grows erect to prostrate and sometimes is matlike. Stems are mostly forked and have a line of hairs down either side. Leaves are broadly egg shaped, have a pointy tip, and are mostly hairless or have hairy margins at the base. The leaves are spaced evenly and are opposite to one another along the stem.', 'edible'),
-                                  WildPlants('Common Sow Thistle', 'An erect, hairless, branched annual or biennial herb about 1 m tall with a taproot and hollow stems which have a milky sap. The basal leaves are up to 30 cm long, form a rosette and are soft and lobed or toothed.', 'edible'),
-                                    WildPlants('Peppergrass', 'The broad basal leaves differ from the narrow leaves on the flowering stalks and range from entire to deeply lobed. Small greenish or whitish four-petaled flowers are arranged in short spikes, and the seeds are usually borne in flat, round, dry fruits called silicles.', 'edible'),
-                                      WildPlants('Wild Leak', 'A popular edible that grows in quality hardwood forests across the Midwest to the Northeast, and south to Virginia. The broad flat leaves with burgundy stems emerge in early spring from a bulb. Both the leaves and bulbs are edible and have a mild onion flavor.', 'edible'),
-                                        WildPlants('broccoli', 'A fast-growing annual plant that grows 60–90 cm (24–35 inches) tall. Upright and branching with leathery leaves, broccoli bears dense green clusters of flower buds at the ends of the central axis and the branches.', 'edible')];
+List<WildPlants> wildPlants = [WildPlants('Asparagus', 'Wild asparagus, also known as "sparrow grass" or "garden asparagus," is a perennial plant that is native to Europe, Asia and Africa. It is similar in appearance to cultivated asparagus, but it grows wild and has a more intense flavor. Wild asparagus is typically thinner and more delicate than cultivated asparagus and has a slightly more bitter taste.', 'Wild asparagus can be eaten cooked or raw, it is commonly sautéed, steamed, grilled or eaten raw in salads. It can also be pickled or preserved as a condiment.' ,'edible', '- Wild asparagus is a foraged food, and it is typically harvested in the spring.\n- It is considered a delicacy in some cultures and is often served in high-end restaurants.\n- Wild asparagus is a good source of vitamins A, C, and K, as well as folate, potassium, and iron.\n- Wild asparagus is also believed to have diuretic properties, which can help flush out excess fluids from the body.'),
+                                WildPlants('Chickweed', 'Chickweed is an annual or perennial herb that belongs to the carnation family. It is characterized by its small, white flowers and pointed, oval leaves. Chickweed is a common weed that grows in gardens and fields, and is often considered a nuisance. However, it is also edible and has been used for medicinal purposes.', 'Chickweed leaves and stems can be eaten raw or cooked. It has a delicate, mild flavor and is often used as a salad green or added to sandwiches and soups. The plant can also be made into a tea or used as a poultice for skin irritations.', 'edible', '- Chickweed is a good source of vitamins A, C, and D, as well as minerals such as iron, calcium, and potassium.\n- Chickweed has been used traditionally to soothe skin irritations and itching.\n- Chickweed is also believed to have anti-inflammatory and diuretic properties.\n- Chickweed is usually collected in the wild, and it is best to pick it when it is young and tender.\n- Chickweed is very invasive and can quickly take over a garden if not controlled.'),
+                                  WildPlants('Common Sow Thistle', 'Common sow thistle, also known as prickly sow thistle, is a herbaceous perennial plant that belongs to the Asteraceae family. It is characterized by its tall stem, spiky leaves, and yellow flowers. Common sow thistle is considered a weed and is often found in cultivated fields, gardens, and along roadsides.', 'Young leaves of common sow thistle can be eaten raw or cooked, it has a slightly bitter taste, the leaves are rich in vitamins and minerals. It can be used in salads, sandwiches or cooked as a vegetable. The plant\'s root can also be used to make a tea.', 'edible', '- Common sow thistle is a good source of vitamins A, C, and K, as well as minerals such as potassium and iron.\n- The plant has been used traditionally as a diuretic, laxative and to treat skin conditions\n- Common sow thistle can grow to be quite tall, reaching up to 6 feet in height\n- The plant can spread rapidly and is considered an invasive species in some areas\n- It is important to note that common sow thistle may be confused with other plants that are poisonous, so it is essential to correctly identify it before consuming it.'),
+                                    WildPlants('Peppergrass', 'Peppergrass, also known as Lepidium, is a genus of plants that belongs to the Brassicaceae family. It is characterized by its small, white or pink flowers, and delicate, lacy leaves. Peppergrass is an annual or perennial herb that is commonly found in cultivated fields, gardens, and along roadsides.', 'The leaves and seeds of peppergrass can be eaten raw or cooked. The leaves have a slightly spicy, pepper-like flavor, and can be used in salads, sandwiches or as a garnish. The seeds can be used as a spice or as a condiment. The plant can also be made into a tea.', 'edible', '- Peppergrass is a good source of vitamins A, C, and K, as well as minerals such as potassium and iron.\n- Peppergrass has been traditionally used as a diuretic and as a treatment for respiratory conditions.\n- Peppergrass can grow to be quite tall, reaching up to 2 feet in height.\n- The plant can spread rapidly and is considered an invasive species in some areas.\n- Peppergrass may be confused with other plants that are poisonous, so it is essential to correctly identify it before consuming it.'),
+                                      WildPlants('Wild Leek', 'Wild leek, also known as ramps, is a perennial herb that belongs to the lily family. It is characterized by its broad, smooth leaves, and small, white flowers. Wild leek is native to North America and is commonly found in the eastern United States, particularly in the Appalachian region.', 'Wild leek leaves, bulbs, and stalks can all be eaten. The leaves have a strong, garlicky flavor, and are commonly used in soups, stews, and omelets. The bulbs are similar to onions in flavor and can be used as a substitute in cooking. The stalks can also be eaten raw or cooked and have a milder flavor than the leaves.', 'edible', '- Wild leek is a good source of vitamins A, C, and K, as well as minerals such as potassium and iron.\n- Wild leek is considered a delicacy in some cultures and is often served in high-end restaurants.\n- Wild leek is a foraged food, and it is typically harvested in the spring.\n- Wild leek is an indicator species of a healthy hardwood forest ecosystem.\n- Wild leek populations are considered threatened due to overharvesting and destruction of its habitat, it is important to sustainably forage and only take a small portion of the plant.'),
+                                        WildPlants('Red Clover', 'Red clover is a perennial herb that is commonly found in fields, meadows, and roadsides throughout Europe, Asia, and North America. It has small, reddish-pink flowers that bloom in clusters.', 'Red clover is often used as a supplement for its potential health benefits, which include reducing the risk of certain cancers, improving bone health, and relieving symptoms of menopause. It is also used as a natural remedy for skin conditions and as a blood purifier.', 'edible', '- Red clover contains a variety of nutrients, including calcium, chromium, magnesium, niacin, phosphorus, potassium, thiamine, and vitamin C.\n- It is a source of isoflavones, which are a type of phytoestrogen that may mimic the effects of estrogen in the body.\n- Red clover has been traditionally used to treat a variety of health conditions, including asthma, bronchitis, cancer, and gout.\n- It is also used as a cover crop in agriculture, as it can fix nitrogen in the soil and improve soil health.\n- The safety of red clover supplements is not clear, and it can interact with certain medications, so it is important to speak with a healthcare professional before using it.')];
+
 
 Future<void> main() async {
   try {
@@ -78,85 +84,8 @@ class _MyAppState extends State<MyApp> {
     super.dispose();
   }
 
-  Future<void> live() async {
-    controller = CameraController(
-      cameras[0],
-      ResolutionPreset.high,
-    );
-    await controller!.initialize().then(
-      (_) {
-        if (!mounted) {
-          return;
-        }
-        setState(() {});
-      },
-    );
-    await controller!.startImageStream(
-      (CameraImage cameraImage) async {
-        if (_isDetecting) return;
-
-        _isDetecting = true;
-
-        await FlutterD2go.getStreamImagePrediction(
-          imageBytesList:
-              cameraImage.planes.map((plane) => plane.bytes).toList(),
-          width: cameraImage.width,
-          height: cameraImage.height,
-          minScore: 0.5,
-          rotation: 90,
-        ).then(
-          (predictions) {
-            List<RecognitionModel>? recognitions;
-            if (predictions.isNotEmpty) {
-              recognitions = predictions.map(
-                (e) {
-                  return RecognitionModel(
-                      Rectangle(
-                        e['rect']['left'],
-                        e['rect']['top'],
-                        e['rect']['right'],
-                        e['rect']['bottom'],
-                      ),
-                      e['mask'],
-                      e['keypoints'] != null
-                          ? (e['keypoints'] as List)
-                          .map((k) => Keypoint(k[0], k[1]))
-                          .toList()
-                          : null,
-                      e['confidenceInClass'],
-                      e['detectedClass']);
-                },
-              ).toList();
-            }
-            setState(
-              () {
-                // With android, the inference result of the camera streaming image is tilted 90 degrees,
-                // so the vertical and horizontal directions are reversed.
-                _imageWidth = cameraImage.height;
-                _imageHeight = cameraImage.width;
-                _recognitions = recognitions;
-              },
-            );
-          },
-        ).whenComplete(
-          () => Future.delayed(
-            const Duration(
-              milliseconds: 100,
-            ),
-            () {
-              setState(() => _isDetecting = false);
-            },
-          ),
-        );
-      },
-    );
-  }
-
-
-
-
   Future loadModel() async {
-    String modelPath = 'assets/models/josh_mask.ptl';
+    String modelPath = 'assets/models/wep_mask_rcnn_fbnetv3_v2.ptl';
     String labelPath = 'assets/models/classes_new.txt';
     try {
       await FlutterD2go.loadModel(
@@ -225,12 +154,10 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    double screenWidth = MediaQuery.of(context).size.width/2;
+    double screenWidth = MediaQuery.of(context).size.width/1.8;
     List<Widget> stackChildren = [];
     stackChildren.add(
-      Positioned(
-        top: 10.0,
-        left: 90.0,
+      Container(
         width: screenWidth,
         child: _selectedImage == null
             ? Image.asset(
@@ -240,24 +167,13 @@ class _MyAppState extends State<MyApp> {
       ),
     );
 
-    if (_isLiveModeOn) {
-      stackChildren.add(
-        Positioned(
-          top: 0.0,
-          left: 0.0,
-          width: screenWidth,
-          child: CameraPreview(controller!),
-        ),
-      );
-    }
-
     if (_recognitions != null) {
       final aspectRatio = _imageHeight! / _imageWidth! * screenWidth;
       final widthScale = screenWidth / _imageWidth!;
       final heightScale = aspectRatio / _imageHeight!;
 
       if (_recognitions!.first.mask != null) {
-        stackChildren.add(_recognitions!.map(
+        stackChildren.addAll(_recognitions!.map(
           (recognition) {
             return RenderSegments(
               imageWidthScale: widthScale,
@@ -265,7 +181,7 @@ class _MyAppState extends State<MyApp> {
               recognition: recognition,
             );
           },
-        ).toList().first);
+        ).toList());
       }
 
       if (_recognitions!.first.keypoints != null) {
@@ -286,7 +202,7 @@ class _MyAppState extends State<MyApp> {
             }
       }
 
-      stackChildren.add(_recognitions!.map(
+      stackChildren.addAll(_recognitions!.map(
         (recognition) {
           return RenderBoxes(
             imageWidthScale: widthScale,
@@ -294,41 +210,284 @@ class _MyAppState extends State<MyApp> {
             recognition: recognition,
           );
         },
-      ).toList().first);
+      ).toList());
     }
     int indexChecker = 0;
     double? confidenceLevel = 0.0;
 
 
         if(wildPlants.indexWhere((plant) => plant.plantName == '${_recognitions?.first.detectedClass!.toString()}') != -1){
+
           finalDesc = wildPlants[wildPlants.indexWhere((plant) => plant.plantName == '${_recognitions?.first.detectedClass!.toString()}')].plantDesc;
           isEdible = wildPlants[wildPlants.indexWhere((plant) => plant.plantName == '${_recognitions?.first.detectedClass!.toString()}')].edibility;
-          edibilityColor = Colors.green;
+          edibilityColor = Colors.greenAccent;
           confidenceLevel = _recognitions?.first.confidenceInClass;
+          plantName = wildPlants[wildPlants.indexWhere((plant) => plant.plantName == '${_recognitions?.first.detectedClass!.toString()}')].plantName;
+          plantUsage = wildPlants[wildPlants.indexWhere((plant) => plant.plantName == '${_recognitions?.first.detectedClass!.toString()}')].usage;
+          others = wildPlants[wildPlants.indexWhere((plant) => plant.plantName == '${_recognitions?.first.detectedClass!.toString()}')].others;
           computedConfidenceLevel = (confidenceLevel! * 100.0);
-
         }else{
-          finalDesc = 'No Class Description Detected Found!';
+          plantName = 'No Edible Plant Detected!';
+          finalDesc = 'Undetermined';
           isEdible = 'Undetermined';
-          edibilityColor = Colors.red;
+          plantUsage = 'Undetermined';
+          others = 'Undeterminded';
+          edibilityColor = Colors.redAccent;
         }
 
     return Scaffold(
       appBar: AppBar(
         title: const Text('EXO'),
         backgroundColor: Colors.green,
+        titleTextStyle: TextStyle(fontSize: 30),
         elevation: 0,
+
       ),
+      body:Padding(
+          padding: const EdgeInsets.all(0.0),
+          child: Center(
+                  child:
+                  ListView(
+                      children: [
+                        Container(
+                          width: MediaQuery.of(context).size.width,
+                          padding: EdgeInsets.all(20.0),
+                          decoration: BoxDecoration(borderRadius: BorderRadius.only(
+                              bottomLeft: Radius.circular(20.0),
+                              bottomRight: Radius.circular(20.0),
+                            ),
+                                color: Colors.green),
+                          child:
+                              Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                 children: [
+                                   Container(
+                                       child:
+                                         Stack(
+                                           children:
+                                           stackChildren,
+                                         ),
+
+                                   ),
+
+                                   SizedBox(
+                                     height: 10.0,
+                                   ),
+                                     FittedBox(
+                                       fit: BoxFit.contain,
+                                       child:
+                                       Align(
+                                         alignment: Alignment.center,
+                                         child:
+                                         AutoSizeText(
+                                           plantName.toUpperCase(),
+                                           style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold, color: Colors.lightGreenAccent),
+                                           minFontSize: 15,
+                                           textAlign: TextAlign.center,
+                                         ),
+
+                                       ),
+
+                                     ),
+                                   Container(
+                                     padding: const EdgeInsets.all(5),
+                                     decoration: BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(20),
+                                     ),
+                                         color: edibilityColor),
+                                     child:
+                                     FittedBox(
+                                       fit: BoxFit.contain,
+                                       child:
+                                       Align(
+                                         alignment: Alignment.center,
+                                         child:
+                                         AutoSizeText(
+                                           isEdible,
+                                           style: TextStyle(fontSize: 12.0, fontWeight: FontWeight.bold, color: Colors.black),
+                                           minFontSize: 15,
+                                           textAlign: TextAlign.center,
+                                         ),
+
+                                       ),
+
+                                     ),
+
+
+                                   ),
+
+
+                                 ],
+                              ),
+
+
+                        ),
+                          Column(
+                              children: [
+                                SizedBox(height: 10),
+                                Container(
+                                  width: MediaQuery.of(context).size.width - 20,
+                                  decoration: BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(20),
+                                  ),
+                                      color: edibilityColor),
+                                  child:ExpansionTile(
+                                    title: Text('Description'),
+                                    children: <Widget>[
+                                      Container(
+                                        padding: const EdgeInsets.only(left: 15, right: 10, top: 10, bottom: 10),
+                                        child: AutoSizeText(
+                                          finalDesc,
+                                          style: TextStyle(fontSize: 12.0, fontWeight: FontWeight.normal, color: Colors.black),
+                                          minFontSize: 15,
+                                          textAlign: TextAlign.justify,
+                                        ),
+                                      ),
+
+                                    ],
+                                  ),
+                                ),
+                                SizedBox(height: 10),
+                                Container(
+                                  width: MediaQuery.of(context).size.width - 20,
+                                  decoration: BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(20),
+                                  ),
+                                      color: edibilityColor),
+                                    child:ExpansionTile(
+                                      title: Text('Usage'),
+                                      children: <Widget>[
+                                        Container(
+                                          padding: const EdgeInsets.only(left: 15, right: 10, top: 10, bottom: 10),
+                                          child: AutoSizeText(
+                                            plantUsage,
+                                            style: TextStyle(fontSize: 12.0, fontWeight: FontWeight.normal, color: Colors.black),
+                                            minFontSize: 15,
+                                            textAlign: TextAlign.justify,
+                                          ),
+                                        ),
+
+                                      ],
+                                    ),
+                                ),
+                                SizedBox(height: 10),
+                                Container(
+                                  width: MediaQuery.of(context).size.width - 20,
+                                  decoration: BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(20),
+                                  ),
+                                      color: edibilityColor),
+                                  child:ExpansionTile(
+                                    title: Text('Others'),
+                                    children: <Widget>[
+                                      Container(
+                                        padding: const EdgeInsets.only(left: 15, right: 10, top: 10, bottom: 10),
+                                        child: AutoSizeText(
+                                          others,
+                                          style: TextStyle(fontSize: 12.0, fontWeight: FontWeight.normal, color: Colors.black),
+                                          minFontSize: 15,
+                                          textAlign: TextAlign.justify,
+                                        ),
+                                      ),
+
+                                    ],
+                                  ),
+                                ),
+                                SizedBox(height: MediaQuery.of(context).size.width * 0.25),
+                          ]
+                          ),
+
+                      ]
+                  )
+          )
+      ),
+
+      floatingActionButton:
+      Flex(
+        direction: Axis.horizontal,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          SizedBox(
+            height: 75.0 ,
+            width: 75.0 ,
+            child: FloatingActionButton(
+              onPressed: () async {
+                final XFile? pickedFile =
+                await _picker.pickImage(source: ImageSource.gallery);
+                if (pickedFile == null) return;
+                setState(
+                      () {
+                    _recognitions = null;
+                    _selectedImage = File(pickedFile.path);
+                  },
+                );
+              },
+              child: const Icon(
+
+                  Icons.photo
+
+              ),backgroundColor: Colors.green,
+
+            ),
+          ),
+      SizedBox(width: 10),
+        FloatingActionButton.large(
+          onPressed: !_isLiveModeOn ? detect : null,
+          child: const Icon(
+
+              Icons.eco
+
+          ),backgroundColor: Colors.green,
+        ),
+          SizedBox(width: 10),
+          SizedBox(
+            height: 75.0 ,
+            width: 75.0 ,
+            child: FloatingActionButton(
+              onPressed: () async {
+                final XFile? pickedFile =
+                await _picker.pickImage(source: ImageSource.camera);
+                if (pickedFile == null) return;
+                setState(
+                      () {
+                    _recognitions = null;
+                    _selectedImage = File(pickedFile.path);
+                  },
+                );
+              },
+              child: const Icon(
+                  Icons.add_a_photo
+
+              ),backgroundColor: Colors.green,
+
+            ),
+          ),
+
+      ],
+    ),
+      bottomNavigationBar: BottomAppBar(
+        color: Colors.green,
+        child: SizedBox(height: 70),
+
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+    );
+
+
+      /*
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const SizedBox(height: 0),
-
-          Expanded(
+          Container(
+            height: 200,
+            decoration: BoxDecoration(borderRadius: BorderRadius.only(
+              bottomLeft: Radius.circular(20.0),
+              bottomRight: Radius.circular(20.0),
+            ),
+                color: Colors.green),
             child: Stack(
               children: stackChildren,
-            ),
+
+            )
+            ,
           ),
+
           SizedBox(
             width: 250.0,
             height: 10,
@@ -452,38 +611,9 @@ class _MyAppState extends State<MyApp> {
         ],
       ),
 
+
     );
-  }
-}
-
-class MyButton extends StatelessWidget {
-  const MyButton({Key? key, required this.onPressed, required this.text})
-      : super(key: key);
-
-  final VoidCallback? onPressed;
-  final String text;
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: 96,
-      height: 42,
-      child: ElevatedButton(
-        onPressed: onPressed,
-        child: Text(
-          text,
-          textAlign: TextAlign.center,
-          style: const TextStyle(
-            color: Colors.black,
-            fontSize: 12,
-          ),
-        ),
-        style: ElevatedButton.styleFrom(
-          primary: Colors.grey[300],
-          elevation: 0,
-        ),
-      ),
-    );
+*/
   }
 }
 
@@ -501,10 +631,10 @@ class RenderBoxes extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final left = recognition.rect.left* imageWidthScale + 90;
-    final top = recognition.rect.top * imageHeightScale + 10;
-    final right = recognition.rect.right * imageWidthScale + 90;
-    final bottom = recognition.rect.bottom * imageHeightScale + 10;
+    final left = recognition.rect.left * imageWidthScale;
+    final top = recognition.rect.top * imageHeightScale;
+    final right = recognition.rect.right * imageWidthScale;
+    final bottom = recognition.rect.bottom * imageHeightScale;
     return Positioned(
       left: left,
       top: top,
@@ -545,10 +675,10 @@ class RenderSegments extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final left = recognition.rect.left * imageWidthScale + 90;
-    final top = recognition.rect.top * imageHeightScale + 10;
-    final right = recognition.rect.right * imageWidthScale + 90;
-    final bottom = recognition.rect.bottom  * imageHeightScale + 10;
+    final left = recognition.rect.left* imageWidthScale;
+    final top = recognition.rect.top * imageHeightScale;
+    final right = recognition.rect.right * imageWidthScale;
+    final bottom = recognition.rect.bottom  * imageHeightScale;
     final mask = recognition.mask!;
     return Positioned(
       left: left,
@@ -577,8 +707,8 @@ class RenderKeypoints extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final x = keypoint.x * imageWidthScale + 90;
-    final y = keypoint.y * imageHeightScale + 10;
+    final x = keypoint.x * imageWidthScale;
+    final y = keypoint.y * imageHeightScale;
     return Positioned(
       left: x,
       top: y,
