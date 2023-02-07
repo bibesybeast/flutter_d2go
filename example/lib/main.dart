@@ -9,13 +9,16 @@ import 'package:flutter_d2go/flutter_d2go.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:auto_size_text/auto_size_text.dart';
-
+import 'package:file_picker/file_picker.dart';
 List<CameraDescription> cameras = [];
 String finalDesc = '';
 String plantName = '';
 String isEdible = '';
 String plantUsage = '';
 String others = '';
+String? _filePath = '';
+String dropdownvalue = 'Wild Plants';
+String _finalPath = 'assets/models/wep_mask_rcnn_fbnetv3_v2.ptl';
 Color edibilityColor = Colors.green;
 double computedConfidenceLevel = 0.0;
 var f = NumberFormat("###.0#", "en_US");
@@ -62,7 +65,7 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   List<RecognitionModel>? _recognitions;
   File? _selectedImage;
-  final List<String> _imageList = ['test1.png', 'test2.jpeg', 'test3.png'];
+  final List<String> _imageList = ['image1.png'];
   int _index = 0;
   int? _imageWidth;
   int? _imageHeight;
@@ -75,7 +78,9 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
-    loadModel();
+    String modelPath = 'assets/models/wep_mask_rcnn_fbnetv3_v2.ptl';
+    String labelPath = 'assets/models/classes_new.txt';
+    loadModel(modelPath, labelPath);
   }
 
   @override
@@ -84,9 +89,9 @@ class _MyAppState extends State<MyApp> {
     super.dispose();
   }
 
-  Future loadModel() async {
-    String modelPath = 'assets/models/wep_mask_rcnn_fbnetv3_v2.ptl';
-    String labelPath = 'assets/models/classes_new.txt';
+  Future loadModel(String model, String label) async {
+    String modelPath = model;
+    String labelPath = label;
     try {
       await FlutterD2go.loadModel(
         modelPath: modelPath,
@@ -105,7 +110,7 @@ class _MyAppState extends State<MyApp> {
     final decodedImage = await decodeImageFromList(image.readAsBytesSync());
     final predictions = await FlutterD2go.getImagePrediction(
       image: image,
-      minScore: 0,
+      minScore: 0.9,
     );
     List<RecognitionModel>? recognitions;
     if (predictions.isNotEmpty) {
@@ -142,6 +147,13 @@ class _MyAppState extends State<MyApp> {
 
   }
 
+  void _pickFile() async {
+    FilePickerResult? result = await FilePicker.platform.pickFiles();
+    setState(() {
+       _filePath = result?.files.single.path;
+    });
+  }
+
   Future<File> getImageFileFromAssets(String path) async {
     final byteData = await rootBundle.load(path);
     final fileName = path.split('/').last;
@@ -154,7 +166,7 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    double screenWidth = MediaQuery.of(context).size.width/1.8;
+    double screenWidth = MediaQuery.of(context).size.width/1.5;
     List<Widget> stackChildren = [];
     stackChildren.add(
       Container(
@@ -216,6 +228,16 @@ class _MyAppState extends State<MyApp> {
     double? confidenceLevel = 0.0;
 
 
+        if(_filePath != ''){
+
+          _finalPath = _filePath!;
+        }else{
+
+          _finalPath = 'assets/models/wep_mask_rcnn_fbnetv3_v2.ptl';
+        }
+
+
+
         if(wildPlants.indexWhere((plant) => plant.plantName == '${_recognitions?.first.detectedClass!.toString()}') != -1){
 
           finalDesc = wildPlants[wildPlants.indexWhere((plant) => plant.plantName == '${_recognitions?.first.detectedClass!.toString()}')].plantDesc;
@@ -243,15 +265,13 @@ class _MyAppState extends State<MyApp> {
         elevation: 0,
 
       ),
-      body:Padding(
-          padding: const EdgeInsets.all(0.0),
+      body:Container(
           child: Center(
                   child:
                   ListView(
                       children: [
                         Container(
                           width: MediaQuery.of(context).size.width,
-                          padding: EdgeInsets.all(20.0),
                           decoration: BoxDecoration(borderRadius: BorderRadius.only(
                               bottomLeft: Radius.circular(20.0),
                               bottomRight: Radius.circular(20.0),
@@ -314,6 +334,7 @@ class _MyAppState extends State<MyApp> {
 
 
                                    ),
+                                   SizedBox(height: 10),
 
 
                                  ],
@@ -323,6 +344,49 @@ class _MyAppState extends State<MyApp> {
                         ),
                           Column(
                               children: [
+                                SizedBox(height: 10),
+                                Container(
+                                  alignment: Alignment.center,
+                                  width: MediaQuery.of(context).size.width / 2,
+                                  decoration: BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(10),
+                                  ),
+                                      color: Colors.green[200]),
+                                  child: DropdownButton<String>(
+                                    // Step 3.
+                                    value: dropdownvalue,
+                                    // Step 4.
+                                    items: <String>['Wild Plants', 'Other']
+                                        .map<DropdownMenuItem<String>>((String value) {
+                                      return DropdownMenuItem<String>(
+                                        value: value,
+                                        child: Text(
+                                          value,
+                                          style: TextStyle(fontSize: 20),
+                                        ),
+                                      );
+                                    }).toList(),
+                                    // Step 5.
+                                    onChanged: (String? newValue) {
+                                      setState(() {
+                                        dropdownvalue = newValue!;
+                                        if(dropdownvalue == 'Wild Plants'){
+                                          String modelPath = 'assets/models/wep_mask_rcnn_fbnetv3_v2.ptl';
+                                          String labelPath = 'assets/models/classes_new.txt';
+                                          loadModel(modelPath, labelPath);
+
+                                        }else if (dropdownvalue == 'Other'){
+
+                                          String modelPath = 'assets/models/d2go.ptl';
+                                          String labelPath = 'assets/models/classes.txt';
+                                          loadModel(modelPath, labelPath);
+
+
+                                        }
+
+                                      });
+                                    },
+                                  ),
+                                ),
                                 SizedBox(height: 10),
                                 Container(
                                   width: MediaQuery.of(context).size.width - 20,
@@ -379,7 +443,7 @@ class _MyAppState extends State<MyApp> {
                                       Container(
                                         padding: const EdgeInsets.only(left: 15, right: 10, top: 10, bottom: 10),
                                         child: AutoSizeText(
-                                          others,
+                                          _finalPath,
                                           style: TextStyle(fontSize: 12.0, fontWeight: FontWeight.normal, color: Colors.black),
                                           minFontSize: 15,
                                           textAlign: TextAlign.justify,
@@ -459,6 +523,7 @@ class _MyAppState extends State<MyApp> {
             ),
           ),
 
+
       ],
     ),
       bottomNavigationBar: BottomAppBar(
@@ -469,151 +534,6 @@ class _MyAppState extends State<MyApp> {
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );
 
-
-      /*
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Container(
-            height: 200,
-            decoration: BoxDecoration(borderRadius: BorderRadius.only(
-              bottomLeft: Radius.circular(20.0),
-              bottomRight: Radius.circular(20.0),
-            ),
-                color: Colors.green),
-            child: Stack(
-              children: stackChildren,
-
-            )
-            ,
-          ),
-
-          SizedBox(
-            width: 250.0,
-            height: 10,
-            child: AutoSizeText(
-              '${f.format(computedConfidenceLevel) + '%'}',
-              style: TextStyle(fontSize: 12.0, fontWeight: FontWeight.bold, color: Colors.green),
-              minFontSize: 10,
-
-              textAlign: TextAlign.center,
-
-            ),
-          ),
-          const SizedBox(height: 0),
-           SizedBox(
-            width: 250.0,
-            height: 25,
-            child: AutoSizeText(
-              '${_recognitions?.first.detectedClass!.toString()}',
-              style: TextStyle(fontSize: 12.0, fontWeight: FontWeight.bold, color: Colors.green),
-              minFontSize: 15,
-
-              textAlign: TextAlign.center,
-
-            ),
-          ),
-
-          SizedBox(
-            width: 100,
-            height: 20,
-            child: AutoSizeText(
-              isEdible,
-              style: TextStyle(fontSize: 12.0, fontWeight: FontWeight.bold, color: Colors.black, backgroundColor: edibilityColor),
-              minFontSize: 12,
-              textAlign: TextAlign.center,
-
-            ),
-          ),
-          const SizedBox(height: 10),
-          SizedBox(
-            width: 250.0,
-            height: 70.0,
-            child: AutoSizeText(
-              finalDesc,
-              style: TextStyle(fontSize: 12.0, color: Colors.green),
-              minFontSize: 5,
-              textAlign: TextAlign.justify,
-
-            ),
-          ),
-
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 48),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-
-              children: [
-                SizedBox(
-                  height: 75.0 ,
-                  width: 75.0 ,
-                  child: FloatingActionButton(
-                    onPressed: () async {
-                      final XFile? pickedFile =
-                      await _picker.pickImage(source: ImageSource.gallery);
-                      if (pickedFile == null) return;
-                      setState(
-                            () {
-                          _recognitions = null;
-                          _selectedImage = File(pickedFile.path);
-                        },
-                      );
-                    },
-                    child: const Icon(
-
-                        Icons.photo
-
-                    ),backgroundColor: Colors.green,
-
-                  ),
-                ),
-                SizedBox(
-                  height: 100.0 ,
-                  width: 100.0 ,
-                  child: FloatingActionButton(
-                    onPressed: !_isLiveModeOn ? detect : null,
-                    child: const Icon(
-
-                        Icons.eco
-
-                    ),backgroundColor: Colors.green,
-
-                  ),
-                ),
-                SizedBox(
-                  height: 75.0 ,
-                  width: 75.0 ,
-                  child: FloatingActionButton(
-                    onPressed: () async {
-                      final XFile? pickedFile =
-                      await _picker.pickImage(source: ImageSource.camera);
-                      if (pickedFile == null) return;
-                      setState(
-                            () {
-                          _recognitions = null;
-                          _selectedImage = File(pickedFile.path);
-                        },
-                      );
-                    },
-                    child: const Icon(
-                        Icons.add_a_photo
-
-                    ),backgroundColor: Colors.green,
-
-                  ),
-                ),
-
-
-
-              ],
-            ),
-          ),
-        ],
-      ),
-
-
-    );
-*/
   }
 }
 
