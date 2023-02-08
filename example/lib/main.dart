@@ -17,7 +17,7 @@ String isEdible = '';
 String plantUsage = '';
 String others = '';
 String? _filePath = '';
-String dropdownvalue = 'Wild Plants';
+String dropdownvalue = 'Mask-RCNN - Wild Plants';
 String _finalPath = 'assets/models/wep_mask_rcnn_fbnetv3_v2.ptl';
 Color edibilityColor = Colors.green;
 double computedConfidenceLevel = 0.0;
@@ -78,7 +78,7 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
-    String modelPath = 'assets/models/wep_mask_rcnn_fbnetv3_v2.ptl';
+    String modelPath = 'assets/models/WEP-MASK-v3-v2.ptl';
     String labelPath = 'assets/models/classes_new.txt';
     loadModel(modelPath, labelPath);
   }
@@ -347,15 +347,14 @@ class _MyAppState extends State<MyApp> {
                                 SizedBox(height: 10),
                                 Container(
                                   alignment: Alignment.center,
-                                  width: MediaQuery.of(context).size.width / 2,
-                                  decoration: BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(10),
+                                  decoration: BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(0),
                                   ),
                                       color: Colors.green[200]),
                                   child: DropdownButton<String>(
                                     // Step 3.
                                     value: dropdownvalue,
                                     // Step 4.
-                                    items: <String>['Wild Plants', 'Other']
+                                    items: <String>['Mask-RCNN - Wild Plants', 'Faster-RCNN - Wild Plants', 'Mask-RCNN - COCO', 'Faster-RCNN - COCO']
                                         .map<DropdownMenuItem<String>>((String value) {
                                       return DropdownMenuItem<String>(
                                         value: value,
@@ -369,12 +368,28 @@ class _MyAppState extends State<MyApp> {
                                     onChanged: (String? newValue) {
                                       setState(() {
                                         dropdownvalue = newValue!;
-                                        if(dropdownvalue == 'Wild Plants'){
-                                          String modelPath = 'assets/models/wep_mask_rcnn_fbnetv3_v2.ptl';
+                                        if(dropdownvalue == 'Mask-RCNN - Wild Plants'){
+                                          String modelPath = 'assets/models/WEP-MASK-v3-v2.ptl';
                                           String labelPath = 'assets/models/classes_new.txt';
                                           loadModel(modelPath, labelPath);
 
-                                        }else if (dropdownvalue == 'Other'){
+                                        }else if (dropdownvalue == 'Faster-RCNN - Wild Plants'){
+
+                                          String modelPath = 'assets/models/WEP-FASTER-v3_v2.ptl';
+                                          String labelPath = 'assets/models/classes_new.txt';
+                                          loadModel(modelPath, labelPath);
+
+
+                                        }
+                                        else if (dropdownvalue == 'Mask-RCNN - COCO'){
+
+                                          String modelPath = 'assets/models/d2go_mask.ptl';
+                                          String labelPath = 'assets/models/classes.txt';
+                                          loadModel(modelPath, labelPath);
+
+
+                                        }
+                                        else if (dropdownvalue == 'Faster-RCNN - COCO'){
 
                                           String modelPath = 'assets/models/d2go.ptl';
                                           String labelPath = 'assets/models/classes.txt';
@@ -382,6 +397,7 @@ class _MyAppState extends State<MyApp> {
 
 
                                         }
+
 
                                       });
                                     },
@@ -443,7 +459,7 @@ class _MyAppState extends State<MyApp> {
                                       Container(
                                         padding: const EdgeInsets.only(left: 15, right: 10, top: 10, bottom: 10),
                                         child: AutoSizeText(
-                                          _finalPath,
+                                          others,
                                           style: TextStyle(fontSize: 12.0, fontWeight: FontWeight.normal, color: Colors.black),
                                           minFontSize: 15,
                                           textAlign: TextAlign.justify,
